@@ -45,7 +45,7 @@ public class AccountController {
     public ResponseEntity<Account> deposit(@PathVariable Long id, @RequestBody Map<String, Double> request) {
         Account account = accountService.getAccountById(id);
 
-        if (account != null) { 
+        if (account == null) { 
             return ResponseEntity.notFound().build();
         } 
 
