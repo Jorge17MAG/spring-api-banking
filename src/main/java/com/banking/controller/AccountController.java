@@ -1,6 +1,7 @@
 package com.banking.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,20 @@ public class AccountController {
     private ResponseEntity<Account> saveAccount(@RequestBody Account account) {
         Account newAccount = accountService.saveAccount(account);
         return ResponseEntity.status(HttpStatus.CREATED).body(newAccount);
+    }
+
+    @PostMapping("/{id}/deposit")
+    public ResponseEntity<Account> deposit(@PathVariable Long id, @RequestBody Map<String, Double> request) {
+        Account account = accountService.getAccountById(id);
+
+        if (account != null) { 
+            return ResponseEntity.notFound().build();
+        } 
+
+        Double amount = request.get("amount");
+        account.setBalance(account.getBalance() + amount);
+        Account accountUpdated = accountService.saveAccount(account);
+        return ResponseEntity.ok(accountUpdated);
     }
 
     @PutMapping("/{id}")
