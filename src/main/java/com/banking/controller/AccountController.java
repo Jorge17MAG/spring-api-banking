@@ -55,6 +55,30 @@ public class AccountController {
         return ResponseEntity.ok(accountUpdated);
     }
 
+    @PostMapping("/{id}/withdraw")
+    public ResponseEntity<?> withdraw(@PathVariable Long id, @RequestBody Map<String, Double> request) {
+        Account account = accountService.getAccountById(id);
+
+        if (account == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cuenta con ID " + id + " no encontrada");
+        }
+
+        Double amount = request.get("amount");
+        double accountBalance = account.getBalance();
+
+        if (amount > accountBalance ) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Accion denegada, montos insuficientes");
+        }
+
+        if (amount < 0 ) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Accion denegada, monto de retiro negativo");
+        }
+
+        account.setBalance(account.getBalance() - amount);
+        Account accountUpdated = accountService.saveAccount(account);
+        return ResponseEntity.ok(accountUpdated);
+    }
+
     @PutMapping("/{id}")
     private ResponseEntity<?> updateAccount(@PathVariable Long id, @RequestBody Account account) {
 
